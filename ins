@@ -1,68 +1,68 @@
-import java.util.ArrayList;  
-import java.util.List;  
-import java.util.Scanner;  
+#include <stdio.h>  
+#include <string.h>  
 
-public class MatrixFormatter {  
-    public static void main(String[] args) {  
-        Scanner scanner = new Scanner(System.in);  
+#define MAX_WORDS 25  
+#define MAX_LINE_LENGTH 10  
 
-        // Read the number of matrices  
-        int N = Integer.parseInt(scanner.nextLine().trim());  
+// Function to calculate maximum words that can fit in N lines of length M  
+int maxWordsFit(char words[MAX_WORDS][MAX_LINE_LENGTH], int K, int N, int M) {  
+    int count = 0; // Count of words placed  
+    int line_used = 0; // Characters used in current line  
+    int space_needed; // Space needed for the next word including a space  
 
-        // Read the number of rows and columns  
-        String[] dimensions = scanner.nextLine().trim().split(" ");  
-        int r = Integer.parseInt(dimensions[0]);  
-        int c = Integer.parseInt(dimensions[1]);  
-
-        // Read in the matrices  
-        List<List<int[][]>> matrices = new ArrayList<>();  
-        for (int row = 0; row < r; row++) {  
-            String[] elements = scanner.nextLine().trim().split(" ");  
-            int[][] matrixRow = new int[N][c];  
-
-            for (int i = 0; i < N; i++) {  
-                for (int col = 0; col < c; col++) {  
-                    matrixRow[i][col] = Integer.parseInt(elements[i * c + col]);  
-                }  
-            }  
-            matrices.add(matrixRow);  
-        }  
-
-        // Read and process the instructions  
-        List<List<Integer>> instructions = new ArrayList<>();  
-        while (scanner.hasNextLine()) {  
-            String line = scanner.nextLine().trim();  
-            if (!line.isEmpty()) {  
-                String[] instructionParts = line.split(" ");  
-                List<Integer> instructionList = new ArrayList<>();  
-                for (String part : instructionParts) {  
-                    instructionList.add(Integer.parseInt(part));  
-                }  
-                instructions.add(instructionList);  
-            }  
-        }  
-
-        // Output the matrices as specified in the instructions  
-        StringBuilder output = new StringBuilder();  
-        for (List<Integer> instruction : instructions) {  
-            for (int index : instruction) {  
-                // Convert 1-based index to 0-based index  
-                int matrixIndex = index - 1;  
-
-                // Construct the output for the matrix at matrixIndex  
-                for (int row = 0; row < r; row++) {  
-                    // Add the row of the specified matrix to the output  
-                    for (int col = 0; col < c; col++) {  
-                        output.append(matrices.get(row)[matrixIndex][col]).append(" ");  
-                    }  
-                }  
-            }  
-        }  
-
-        // Print the output with formatting  
-        System.out.println(output.toString().trim());  
+    // Iterate through all words  
+    for (int i = 0; i < K; i++) {  
+        int word_length = strlen(words[i]);  
         
-        // Close the scanner  
-        scanner.close();  
+        // If the word fits in the current line  
+        if (line_used + word_length <= M) {  
+            // Add space if it's not the first word in the line  
+            if (line_used > 0) {  
+                space_needed = 1; // Add space before the new word  
+            } else {  
+                space_needed = 0; // No space needed for the first word  
+            }  
+            
+            // Check if adding this word exceeds line length  
+            if (line_used + space_needed + word_length <= M) {  
+                // Add the word  
+                line_used += space_needed + word_length;  
+                count++;  
+            }  
+        } else {  
+            // Start a new line if the current word cannot fit  
+            N--; // We are using up one line  
+            line_used = word_length; // Use line for the current word  
+            count++;  
+        }  
+
+        // If we have exhausted line capacity, reset  
+        if (N <= 0) {  
+            break; // No more lines are available  
+        }  
     }  
+
+    return count;  
+}  
+
+int main() {  
+    int K, N, M;  
+    char words[MAX_WORDS][MAX_LINE_LENGTH];  
+
+    // Read the number of words  
+    scanf("%d", &K);  
+    // Read the words  
+    for (int i = 0; i < K; i++) {  
+        scanf("%s", words[i]);  
+    }  
+    // Read N and M  
+    scanf("%d %d", &N, &M);  
+
+    // Calculate the maximum number of words that can fit  
+    int result = maxWordsFit(words, K, N, M);  
+
+    // Print the result  
+    printf("%d\n", result);  
+
+    return 0;  
 }
