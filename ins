@@ -1,0 +1,36 @@
+def main():  
+    import sys  
+    
+    # Read the number of matrices  
+    N = int(input().strip())  
+    
+    # Read the number of rows and columns  
+    r, c = map(int, input().strip().split())  
+    
+    # Read in the matrices  
+    matrices = []  
+    for _ in range(r):  
+        row_data = list(map(int, input().strip().split()))  
+        matrices.append([row_data[i * c:(i + 1) * c] for i in range(N)])  
+    
+    # Read and process the instructions  
+    instructions = []  
+    for line in sys.stdin:  
+        if line.strip():  
+            instructions.append(list(map(int, line.strip().split())))  
+    
+    # Create an output list for formatted output  
+    output = []  
+    
+    for instruction in instructions:  
+        for matrix_index in instruction:  
+            # The matrix_index is 1-based; convert to 0-based.  
+            index = matrix_index - 1  
+            output.append(' '.join(' '.join(map(str, matrices[row][index])) for row in range(r)))  
+    
+    # Print the output  
+    for line in output:  
+        print(line)  
+
+if __name__ == "__main__":  
+    main()
